@@ -1,4 +1,4 @@
-﻿@model Project_Portal.Models.AttendeeModel
+﻿@model Project_Portal.Models.PresentationModel
 @{
     ViewData["Title"] = "PresentationDetails";
 }
@@ -10,13 +10,14 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.presentationID)
+            @Html.DisplayNameFor(Model => Model.name)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.presentationID)
+            @Html.DisplayFor(Model => Model.name)
         </dd>
     </dl>
 </div>
+<h2>@Model.name</h2>
 <div>
     <a asp-action="ViewAllPresentation">Back to List</a>
 </div>

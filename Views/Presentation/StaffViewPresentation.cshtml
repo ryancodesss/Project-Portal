@@ -1,20 +1,21 @@
 ﻿@model IEnumerable<Project_Portal.Models.PresentationModel>
 
 @{
+    Layout = "~/Views/Shared/Staff_Layout.cshtml";
+}
+
+@{
     ViewData["Title"] = "StaffViewPresentation";
 }
 
-<h1>ViewAllPresentation</h1>
+<h1>Presentation Schedule</h1>
 
-<p>
-    <a asp-action="CreatePresentation">Create New</a>
-</p>
+<h4>
+    <a asp-action="StaffCreatePresent">Create New</a>
+</h4>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.name)
             </th>
@@ -40,9 +41,6 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.name)
             </td>
             <td>
@@ -62,8 +60,7 @@
             </td>
             <td>
                     @Html.ActionLink("Edit", "EditPresentation", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "DeletePresentation", new { /* id=item.PrimaryKey */ })
+                    @Html.ActionLink("Details", "Details", new {  primarykey = item.Id }) |
             </td>
         </tr>
 }

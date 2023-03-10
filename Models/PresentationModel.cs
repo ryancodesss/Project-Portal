@@ -9,7 +9,6 @@ namespace Project_Portal.Models
     public class PresentationModel
     {
         public string Id { get; set; } // firebase unique id 
-        public string presentationID { get; set; }
         public string name { get; set; }
         public string description { get; set; }
         public string location { get; set; }

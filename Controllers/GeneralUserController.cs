@@ -25,6 +25,8 @@ namespace Project_Portal.Controllers
         
 
         // GET: GeneralUserController/View
+        // THIS METHOD IS FOR ADMIN USER
+        /**
         public ActionResult AccountDetails()
         {
             IFirebaseClient client = new FireSharp.FirebaseClient(config);
@@ -41,18 +43,27 @@ namespace Project_Portal.Controllers
 
             return View(list);
         }
+        **/
         
-        // GET: GeneralUserController/Create
-        public IActionResult Create()
+        // GET: GeneralUserController/View account
+        public IActionResult AccountDetails()
         {
+            string email = HttpContext.Session.GetString("_UserEmail");
+            string pass = HttpContext.Session.GetString("_UserPassword");
+            ViewBag.Email = email;
+            ViewBag.Password = pass;
             return View();
         }
-        
 
-        // POST: GeneralUserController/Create
+
+        // POST: GeneralUserController/View account
+        // this methods will upload new records to database
+        
+        // Require to validate if there is existing records
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(GeneralUserModel generalUser)
+        public IActionResult AccountDetails(GeneralUserModel generalUser)
         {
             try
             {
@@ -76,10 +87,11 @@ namespace Project_Portal.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            return View();
+            return View("Index");
         }
-
         
+
+        /**
         // GET: GeneralUserController/Edit/5
         public ActionResult EditAccountDetails(string id)
         {
@@ -125,6 +137,6 @@ namespace Project_Portal.Controllers
                 return View();
             }
         }
-        
+        **/
     }
 }

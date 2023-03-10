@@ -19,8 +19,23 @@ namespace Project_Portal.Controllers
                             new FirebaseConfig("AIzaSyC1ZXHDjcnOy5lC24mCQcyaKPRFih7KP5Q"));
         }
 
-        // View method for main page
-        public IActionResult Index()
+        // Main page after general user login
+        public IActionResult IndexGeneral()
+        {
+            var token = HttpContext.Session.GetString("_UserToken");
+
+            if (token != null)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("SignIn");
+            }
+        }
+
+        // Main page after staff user login
+        public IActionResult IndexStaff()
         {
             var token = HttpContext.Session.GetString("_UserToken");
 
@@ -52,11 +67,6 @@ namespace Project_Portal.Controllers
             return View();
         }
 
-        // View method for register details page
-        public IActionResult Create()
-        {
-            return View();
-        }
 
         // Handle error when changing view
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -77,12 +87,17 @@ namespace Project_Portal.Controllers
                 var fbAuthLink = await auth
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
                 string token = fbAuthLink.FirebaseToken;
+                string emailtoken = loginModel.Email;
+
                 //saving the token in a session variable
                 if (token != null)
                 {
-                    HttpContext.Session.SetString("_UserToken", token);
 
-                    return RedirectToAction("Index");
+                    // sync user id
+                    HttpContext.Session.SetString("_UserToken", token);
+                    HttpContext.Session.SetString("_UserEmail", emailtoken);
+
+                    return View("IndexGeneral");
                 }
             }
             catch (FirebaseAuthException ex)
@@ -106,12 +121,18 @@ namespace Project_Portal.Controllers
                 var fbAuthLink = await auth
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
                 string token = fbAuthLink.FirebaseToken;
+                string emailtoken = loginModel.Email;
                 //save the token to a session variable
                 if (token != null)
                 {
-                    HttpContext.Session.SetString("_UserToken", token);
 
-                    return RedirectToAction("Index");
+                    
+                    HttpContext.Session.SetString("_UserToken", token);
+                    HttpContext.Session.SetString("_UserEmail", emailtoken);
+
+                    // Check if email is staff or student
+                    // INSERT ALGO HERE
+                    return RedirectToAction("IndexGeneral");
                 }
 
             }
@@ -129,6 +150,8 @@ namespace Project_Portal.Controllers
         public IActionResult LogOut()
         {
             HttpContext.Session.Remove("_UserToken");
+            HttpContext.Session.Remove("_UserEmail");
+            HttpContext.Session.Remove("_UserPassword");
             return RedirectToAction("SignIn");
         }
 
