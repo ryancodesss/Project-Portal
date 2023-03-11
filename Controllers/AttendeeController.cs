@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using FireSharp;
 using System.Linq.Expressions;
+using Project_Portal.Services;
+using NuGet.Common;
 
 namespace Project_Portal.Controllers
 {
@@ -22,19 +24,20 @@ namespace Project_Portal.Controllers
             BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
+        private AuthenticationServices authService = new AuthenticationServices();
 
         // GET User register attendence
-        public IActionResult RegisterAttendance(string primarykey)  
+        public async Task<IActionResult> RegisterAttendanceAsync(string primarykey)  
         {
-            string email = HttpContext.Session.GetString("_UserEmail");
-            
+            string token = HttpContext.Session.GetString("_UserToken");
+            string email = await authService.GetUserEmailByToken(token);
+
             ViewBag.userEmail = email;
             ViewBag.presentationName = primarykey;
             return View();
         }
 
-        // EHEREASNDOIASNOIANFAF
-        //ASDASDASDASDASDD
+
         // POST user registration attendence
         [HttpPost]
         [ValidateAntiForgeryToken]

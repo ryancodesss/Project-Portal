@@ -145,7 +145,7 @@ namespace Project_Portal.Controllers
 
                     // Check if userType is staff or student
                     // INSERT ALGO HERE
-                    return RedirectToAction("IndexStaff");
+                    return RedirectToAction("IndexGeneral");
                 }
 
             }

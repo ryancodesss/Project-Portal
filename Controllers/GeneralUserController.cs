@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using FireSharp;
 using System.Linq.Expressions;
+using Project_Portal.Services;
 
 namespace Project_Portal.Controllers
 {
@@ -21,8 +22,9 @@ namespace Project_Portal.Controllers
             AuthSecret = "BJm0Xt86MfbcKsarwCPzTvT2zfOcGw72OEW5XUzq",
             BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
-        
-        
+
+        private AuthenticationServices authService = new AuthenticationServices();
+
 
         // GET: GeneralUserController/View
         // THIS METHOD IS FOR ADMIN USER
@@ -44,11 +46,12 @@ namespace Project_Portal.Controllers
             return View(list);
         }
         **/
-        
+
         // GET: GeneralUserController/View account
-        public IActionResult AccountDetails()
+        public async Task<IActionResult> AccountDetailsAsync()
         {
-            string email = HttpContext.Session.GetString("_UserEmail");
+            string token = HttpContext.Session.GetString("_UserToken");
+            string email = await authService.GetUserEmailByToken(token);
             string pass = HttpContext.Session.GetString("_UserPassword");
             ViewBag.Email = email;
             ViewBag.Password = pass;
