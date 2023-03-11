@@ -10,9 +10,9 @@
 
 <h1>Presentation Schedule</h1>
 
-<h4>
-    <a asp-action="StaffCreatePresent">Create New</a>
-</h4>
+<p>
+    <a asp-action="CreatePresentation">Create New</a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -59,8 +59,9 @@
                 @Html.DisplayFor(modelItem => item.creator)
             </td>
             <td>
-                    @Html.ActionLink("Edit", "EditPresentation", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "Details", new {  primarykey = item.Id }) |
+                    <a asp-action="EditPresentation" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

@@ -1,4 +1,4 @@
-﻿@model Project_Portal.Models.LoginModel
+﻿@model Project_Portal.Models.RegistrationModel
 
 @{
     Layout = "~/Views/Shared/Home_Layout.cshtml";
@@ -22,11 +22,31 @@
             </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" type="password" />
+                <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Register" class="btn btn-primary" />
+                <label asp-for="First_Name" class="control-label"></label>
+                <input asp-for="First_Name" class="form-control" />
+                <span asp-validation-for="First_Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Last_Name" class="control-label"></label>
+                <input asp-for="Last_Name" class="form-control" />
+                <span asp-validation-for="Last_Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone_Num" class="control-label"></label>
+                <input asp-for="Phone_Num" class="form-control" />
+                <span asp-validation-for="Phone_Num" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Affliation" class="control-label"></label>
+                <input asp-for="Affliation" class="form-control" />
+                <span asp-validation-for="Affliation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Sign Up" class="btn btn-primary" />
             </div>
         </form>
     </div>

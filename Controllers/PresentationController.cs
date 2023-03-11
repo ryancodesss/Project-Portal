@@ -8,30 +8,26 @@ using FireSharp.Response;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using FireSharp;
-using System;
+using System.Linq.Expressions;
+using Project_Portal.Services;
+using Firebase.Auth;
+using FireSharp.Exceptions;
+using System.Net;
 
 namespace Project_Portal.Controllers
 {
     public class PresentationController : Controller
     {
-        
-        // Firebase connection
-        IFirebaseConfig config = new FirebaseConfig
+
+        IFirebaseConfig config = new FireSharp.Config.FirebaseConfig
         {
             AuthSecret = "BJm0Xt86MfbcKsarwCPzTvT2zfOcGw72OEW5XUzq",
             BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
-
-        // GET: View presentation details
-        public ActionResult Details(string primarykey)
-        {
-            IFirebaseClient client = new FireSharp.FirebaseClient(config);
-            FirebaseResponse response = client.Get("Presentation/" + primarykey);
-            PresentationModel data = JsonConvert.DeserializeObject<PresentationModel>(response.Body);
-            
-            return View(data);
-        }
+        //Initialize Sevices namespace
+        private DatabaseServices dbService = new DatabaseServices();
+        private AuthenticationServices authService = new AuthenticationServices();
 
         // GET: Create presentation event
         public IActionResult StaffCreatePresent()
@@ -104,26 +100,37 @@ namespace Project_Portal.Controllers
         }
 
         // GET: Edit presentation details
-        public IActionResult EditPresentation()
+        public async Task<IActionResult> EditPresentation(string? id)
         {
-            //return View();
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var presentation = await dbService.GetPresentationById(id);
+            if (presentation == null)
+            {
+                return NotFound();
+            }
+            return View(presentation);
         }
 
-        
+
         // POST: Create presentation event
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult StaffCreatePresent(PresentationModel presentation)
+        public async Task<IActionResult> CreatePresentationAsync(PresentationModel presentation)
         {
-
             try
             {
-                IFirebaseClient client = new FireSharp.FirebaseClient(config);
-                var data = presentation;
-                PushResponse response = client.Push("Presentation/", data);
-                data.Id = response.Result.name;
-                SetResponse setResponse = client.Set("Presentation/" + data.Id, data);
+                //Get current user token
+                var token = HttpContext.Session.GetString("_UserToken");
+                //Get current user id based on token
+                string uid = await authService.GetCurrentUser(token);
+                //Set presentation Model's creator to uid
+                presentation.creator = uid;
+                //Add presentation
+                SetResponse setResponse = await dbService.AddPresentation(presentation);
 
                 if (setResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -140,6 +147,34 @@ namespace Project_Portal.Controllers
             }
             
             return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPresentation(string id, [Bind("Id,presentationID,name,description,location,date,time,creator")] PresentationModel presentation)
+        {
+            if (id != presentation.Id)
+            {
+                return NotFound();
+            }
+
+
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    //Update DB
+                    HttpStatusCode statusCode = await dbService.EditPresentationById(id, presentation);
+                }
+                catch (FirebaseException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+                return RedirectToAction(nameof(StaffViewPresentation));
+            }
+            return View(presentation);
         }
 
         // POST: Delete presentation event button

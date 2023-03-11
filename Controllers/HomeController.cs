@@ -3,12 +3,16 @@ using Project_Portal.Models;
 using System.Diagnostics;
 using Firebase.Auth;
 using Newtonsoft.Json;
+using Project_Portal.Services;
+using FireSharp.Exceptions;
 
 namespace Project_Portal.Controllers
 {
     public class HomeController : Controller
     {
-        
+        //Initialize Sevices namespace
+        public DatabaseServices dbService = new DatabaseServices();
+
         // Declare firebase authentication object
         FirebaseAuthProvider auth;
 
@@ -77,34 +81,47 @@ namespace Project_Portal.Controllers
 
         // Validate and process the registration request submitted by user
         [HttpPost]
-        public async Task<IActionResult> Registration(LoginModel loginModel)
+        public async Task<IActionResult> Registration(RegistrationModel registrationModel)
         {
             try
             {
                 //create the user
-                await auth.CreateUserWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
+                await auth.CreateUserWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
                 //log in the new user
                 var fbAuthLink = await auth
-                                .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
+                                .SignInWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
                 string token = fbAuthLink.FirebaseToken;
-                string emailtoken = loginModel.Email;
+                HttpContext.Session.SetString("_UserToken", token);
+
+                //Get current user's authentication ID
+                var uid = fbAuthLink.User.LocalId.ToString();
+                //Set current user's id to be uid
+                registrationModel.Id = uid;
+
+                try
+                {
+                    dbService.AddUser(registrationModel);
+                }
+                catch(FirebaseException ex)
+                {
+                    var firebaseEx = JsonConvert.DeserializeObject<FirebaseException>(ex.Message);
+                    ModelState.AddModelError(String.Empty, firebaseEx.Message);
+                    return View(registrationModel);
+                }
 
                 //saving the token in a session variable
                 if (token != null)
                 {
-
-                    // sync user id
                     HttpContext.Session.SetString("_UserToken", token);
-                    HttpContext.Session.SetString("_UserEmail", emailtoken);
 
                     return View("IndexGeneral");
                 }
             }
             catch (FirebaseAuthException ex)
             {
-                var firebaseEx = JsonConvert.DeserializeObject<FirebaseError>(ex.ResponseData);
+                var firebaseEx = JsonConvert.DeserializeObject<FirebaseError>(ex.Message);
                 ModelState.AddModelError(String.Empty, firebaseEx.error.message);
-                return View(loginModel);
+                return View(registrationModel);
             }
 
             return View();
@@ -121,14 +138,10 @@ namespace Project_Portal.Controllers
                 var fbAuthLink = await auth
                                 .SignInWithEmailAndPasswordAsync(loginModel.Email, loginModel.Password);
                 string token = fbAuthLink.FirebaseToken;
-                string emailtoken = loginModel.Email;
                 //save the token to a session variable
                 if (token != null)
                 {
-
-                    
                     HttpContext.Session.SetString("_UserToken", token);
-                    HttpContext.Session.SetString("_UserEmail", emailtoken);
 
                     // Check if email is staff or student
                     // INSERT ALGO HERE
@@ -150,8 +163,6 @@ namespace Project_Portal.Controllers
         public IActionResult LogOut()
         {
             HttpContext.Session.Remove("_UserToken");
-            HttpContext.Session.Remove("_UserEmail");
-            HttpContext.Session.Remove("_UserPassword");
             return RedirectToAction("SignIn");
         }
 
