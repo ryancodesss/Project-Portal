@@ -8,10 +8,13 @@ namespace Project_Portal.Models
     public class GeneralUserModel
     {
         public string Id { get; set; } // firebase unique id 
-        public string username { get; set; }
-        public string fullname { get; set; }
-        public string email { get; set; }
-        public string phone { get; set; }
+        public string Email { get; set; } // user's email address
+
+        public string Password { get; set; } // user's login password
+        public string Username { get; set; } // user's name
+        public string Phone { get; set; } // user's phone number
+        public string Affliation { get; set; } // user's school affliation
+        public char User_Type { get; set; } // user's type
     }
 }
 

@@ -30,11 +30,33 @@ namespace Project_Portal.Controllers
         private AuthenticationServices authService = new AuthenticationServices();
 
         // GET: Create presentation event
-        public IActionResult CreatePresentation()
+        public IActionResult StaffCreatePresent()
         {
+            // retrieve user id from session
+            string creator = HttpContext.Session.GetString("_UserEmail");
+            // prefill form textbox values
+            ViewBag.creator = creator;
 
             return View();
             
+        }
+
+        // GET: View Up-coming Presentations
+        public IActionResult GeneralViewPresent()
+        {
+            IFirebaseClient client = new FireSharp.FirebaseClient(config);
+            FirebaseResponse response = client.Get("Presentation");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<PresentationModel>();
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            return View(list);
         }
 
         // GET: View all presentation events
@@ -42,6 +64,28 @@ namespace Project_Portal.Controllers
         {
             IFirebaseClient client = new FireSharp.FirebaseClient(config);
             FirebaseResponse response = client.Get("Presentation");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<PresentationModel>();
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            return View(list);
+        }
+
+
+        // GET: View registered presentations
+        public IActionResult GeneralAttendPresent()
+        {
+            IFirebaseClient client = new FireSharp.FirebaseClient(config);
+
+            string userEmail = HttpContext.Session.GetString("_UserEmail");
+            FirebaseResponse response = client.Get("Attendance/" + userEmail);
+
             dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
             var list = new List<PresentationModel>();
             if (data != null)
@@ -150,6 +194,6 @@ namespace Project_Portal.Controllers
                 return View();
             }
         }
-
+        
     }
 }

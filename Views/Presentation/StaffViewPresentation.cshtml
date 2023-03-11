@@ -1,10 +1,14 @@
 ﻿@model IEnumerable<Project_Portal.Models.PresentationModel>
 
 @{
+    Layout = "~/Views/Shared/Staff_Layout.cshtml";
+}
+
+@{
     ViewData["Title"] = "StaffViewPresentation";
 }
 
-<h1>ViewAllPresentation</h1>
+<h1>Presentation Schedule</h1>
 
 <p>
     <a asp-action="CreatePresentation">Create New</a>
@@ -12,9 +16,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.presentationID)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.name)
             </th>
@@ -39,9 +40,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.presentationID)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.name)
             </td>

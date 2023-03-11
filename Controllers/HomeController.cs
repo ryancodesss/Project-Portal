@@ -23,8 +23,23 @@ namespace Project_Portal.Controllers
                             new FirebaseConfig("AIzaSyC1ZXHDjcnOy5lC24mCQcyaKPRFih7KP5Q"));
         }
 
-        // View method for main page
-        public IActionResult Index()
+        // Main page after general user login
+        public IActionResult IndexGeneral()
+        {
+            var token = HttpContext.Session.GetString("_UserToken");
+
+            if (token != null)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("SignIn");
+            }
+        }
+
+        // Main page after staff user login
+        public IActionResult IndexStaff()
         {
             var token = HttpContext.Session.GetString("_UserToken");
 
@@ -56,11 +71,6 @@ namespace Project_Portal.Controllers
             return View();
         }
 
-        // View method for register details page
-        public IActionResult Create()
-        {
-            return View();
-        }
 
         // Handle error when changing view
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -104,7 +114,7 @@ namespace Project_Portal.Controllers
                 {
                     HttpContext.Session.SetString("_UserToken", token);
 
-                    return RedirectToAction("Index");
+                    return View("IndexGeneral");
                 }
             }
             catch (FirebaseAuthException ex)
@@ -133,7 +143,9 @@ namespace Project_Portal.Controllers
                 {
                     HttpContext.Session.SetString("_UserToken", token);
 
-                    return RedirectToAction("Index");
+                    // Check if email is staff or student
+                    // INSERT ALGO HERE
+                    return RedirectToAction("IndexGeneral");
                 }
 
             }

@@ -1,18 +1,18 @@
 ﻿@model IEnumerable<Project_Portal.Models.PresentationModel>
 
 @{
-    ViewData["Title"] = "GeneralViewPresentation";
+    Layout = "~/Views/Shared/General_Layout.cshtml";
 }
 
-<h1>View Presentations</h1>
+@{
+    ViewData["Title"] = "GeneralViewPresent";
+}
 
+<h1>Presentation Scheudule</h1>
 
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.name)
             </th>
@@ -38,9 +38,6 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.name)
             </td>
             <td>
@@ -59,7 +56,7 @@
                 @Html.DisplayFor(modelItem => item.creator)
             </td>
             <td>
-                    @Html.ActionLink("Register", "RegisterAttendance", new { /* id=item.PrimaryKey */ })
+                    @Html.ActionLink("Register", "RegisterAttendance", "Attendee", new { primarykey = item.name } , new { @method = "POST" })
             </td>
         </tr>
 }

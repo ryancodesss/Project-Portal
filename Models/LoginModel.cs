@@ -9,9 +9,9 @@ namespace Project_Portal.Models
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
-        [Required]
-        public string Password { get; set; }
+        public string Email { get; set; } // user's email
+        [Required] 
+        public string Password { get; set; } // user's password
     }
 
     
