@@ -13,7 +13,11 @@ namespace Project_Portal.Models
         public string name { get; set; }
         public string description { get; set; }
         public string location { get; set; }
+
+        [DataType(DataType.Date)]
         public string date { get; set; }
+
+        [DataType(DataType.Time)]
         public string time { get; set; }
         public string creator { get; set; }
     }
