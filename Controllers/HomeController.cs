@@ -143,9 +143,9 @@ namespace Project_Portal.Controllers
                 {
                     HttpContext.Session.SetString("_UserToken", token);
 
-                    // Check if email is staff or student
+                    // Check if userType is staff or student
                     // INSERT ALGO HERE
-                    return RedirectToAction("IndexGeneral");
+                    return RedirectToAction("IndexStaff");
                 }
 
             }
