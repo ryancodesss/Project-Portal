@@ -5,24 +5,6 @@ namespace Project_Portal.Services
 {
     public class AuthenticationServices
     {
-        //static FirebaseAuthConfig config = new FirebaseAuthConfig
-        //{
-        //    ApiKey = "AIzaSyC1ZXHDjcnOy5lC24mCQcyaKPRFih7KP5Q",
-        //    AuthDomain = "portal-project-14039.firebaseapp.com",
-        //    Providers = new FirebaseAuthProvider[]
-        //    {
-        //            //new GoogleProvider(),
-        //            //new FacebookProvider(),
-        //            //new TwitterProvider(),
-        //            //new GithubProvider(),
-        //            //new MicrosoftProvider(),
-        //            new EmailProvider()
-        //    }
-        //}
-
-        //FirebaseAuthClient client = new FirebaseAuthClient(config);
-
-
         // Declare firebase authentication object
         // Firebase web API link
         private readonly FirebaseAuthProvider auth = new FirebaseAuthProvider(
@@ -33,6 +15,12 @@ namespace Project_Portal.Services
         {
             User user = await auth.GetUserAsync(token);
             return user.LocalId.ToString();
+        }
+
+        public async Task<string> GetUserEmailByToken(string token)
+        {
+            User user = await auth.GetUserAsync(token);
+            return user.Email;
         }
 
     };

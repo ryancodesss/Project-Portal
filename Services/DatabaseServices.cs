@@ -20,14 +20,6 @@ namespace Project_Portal.Services
         private const string dbURL = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app/";
         private const string auth = "BJm0Xt86MfbcKsarwCPzTvT2zfOcGw72OEW5XUzq";
 
-        //Create DB connection with secret and DB url
-
-        //private readonly FirebaseClient firebaseClient = new FirebaseClient(dbURL,
-        //    new FirebaseOptions
-        //    {
-        //        AuthTokenAsyncFactory = () => Task.FromResult(auth)
-        //    });
-
         private readonly static IFirebaseConfig config = new FirebaseConfig
         {
             AuthSecret = auth,
@@ -38,10 +30,6 @@ namespace Project_Portal.Services
         public async void AddUser(RegistrationModel user)
         {
             await client.PushAsync("Users", user);
-
-            //await firebaseClient
-            //                .Child("Users")
-            //                .PostAsync(user);
         }
 
         public async Task<SetResponse> AddPresentation(PresentationModel presentation)
@@ -66,6 +54,5 @@ namespace Project_Portal.Services
             FirebaseResponse response = await client.UpdateAsync("Presentation/" + id, presentation);
             return response.StatusCode;
         }
-
     }
 }
