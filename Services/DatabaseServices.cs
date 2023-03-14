@@ -11,6 +11,7 @@ using FireSharp.Config;
 using FireSharp.Response;
 using Newtonsoft.Json;
 using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace Project_Portal.Services
 {
@@ -53,6 +54,22 @@ namespace Project_Portal.Services
         {
             FirebaseResponse response = await client.UpdateAsync("Presentation/" + id, presentation);
             return response.StatusCode;
+        }
+
+        public async Task<List<GeneralUserModel>> GetAllUser()
+        {
+            FirebaseResponse response = await client.GetAsync("Users");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<GeneralUserModel>();
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<GeneralUserModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            return list;
         }
     }
 }
