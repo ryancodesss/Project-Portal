@@ -1,0 +1,64 @@
+﻿@model Project_Portal.Models.AttendeeModel
+
+@{
+    Layout = "~/Views/Shared/General_Layout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "ReviewForm";
+}
+
+<h1>Review presentation</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ReviewForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="presentationName" class="control-label">Presentation</label>
+                <input asp-for="presentationName" class="form-control" value="@ViewBag.presentName" readonly />
+                <span asp-validation-for="presentationName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+
+                <input asp-for = "reviewScore" type="radio" id="reviewScore1" name="reviewScore" value="1">
+                <label for="reviewScore1">1 Star</label>&nbsp;&nbsp;
+
+                <input asp-for="reviewScore" type="radio" id="reviewScore2" name="reviewScore" value="2">
+                <label for="reviewScore2">2 Star</label>&nbsp;&nbsp;
+
+                <input asp-for="reviewScore" type="radio" id="reviewScore3" name="reviewScore" value="3">
+                <label for="reviewScore3">3 Star</label>&nbsp;&nbsp;
+
+                <input asp-for="reviewScore" type="radio" id="reviewScore4" name="reviewScore" value="4">
+                <label for="reviewScore4">4 Star</label>&nbsp;&nbsp;
+
+                <input asp-for="reviewScore" type="radio" id="reviewScore5" name="reviewScore" value="5">
+                <label for="reviewScore5">5 Star</label>
+
+                <span asp-validation-for="reviewScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="reviewDesc" class="control-label">Description</label>
+                <textarea id="reviewDesc" asp-for="reviewDesc" name="reviewDesc" rows="5" cols="50"></textarea>
+                <span asp-validation-for="reviewDesc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Review" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="RegisterAttendance">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

@@ -5,6 +5,9 @@ using Firebase.Auth;
 using Newtonsoft.Json;
 using Project_Portal.Services;
 using FireSharp.Exceptions;
+using FireSharp.Interfaces;
+using FireSharp.Response;
+using Newtonsoft.Json.Linq;
 
 namespace Project_Portal.Controllers
 {
@@ -22,6 +25,7 @@ namespace Project_Portal.Controllers
             auth = new FirebaseAuthProvider(
                             new FirebaseConfig("AIzaSyC1ZXHDjcnOy5lC24mCQcyaKPRFih7KP5Q"));
         }
+
 
         // Main page after general user login
         public IActionResult IndexGeneral()
@@ -67,6 +71,12 @@ namespace Project_Portal.Controllers
 
         // View method for sign in page
         public IActionResult SignIn()
+        {
+            return View();
+        }
+
+        // View method for admin
+        public IActionResult IndexAdmin()
         {
             return View();
         }
@@ -141,11 +151,14 @@ namespace Project_Portal.Controllers
                 //save the token to a session variable
                 if (token != null)
                 {
+                    // filter between staff, admin and general user
+                    // add code here
+
                     HttpContext.Session.SetString("_UserToken", token);
 
                     // Check if userType is staff or student
                     // INSERT ALGO HERE
-                    return RedirectToAction("IndexGeneral");
+                    return RedirectToAction("IndexStaff");
                 }
 
             }
@@ -166,5 +179,30 @@ namespace Project_Portal.Controllers
             return RedirectToAction("SignIn");
         }
 
+
+        // GET: view all acounts
+        public IActionResult ViewAccounts()
+        {
+            /**
+            IFirebaseClient client = new FireSharp.FirebaseClient(config);
+
+            // check if user have registered before
+            // pull all data from attendence table
+            FirebaseResponse response = client.Get("User");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<GeneralUserModel>();
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<GeneralUserModel>(((JProperty)item).Value.ToString()));
+                }
+            }**/
+
+            //return View(list);
+            return View();
+        }
+
     }
+
 }

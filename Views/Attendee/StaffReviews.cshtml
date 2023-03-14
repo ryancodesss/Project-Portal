@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Project_Portal.Models.AttendeeModel>
+
+@{
+    Layout = "~/Views/Shared/Staff_Layout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "StaffReviews";
+}
+<h1>Reviews</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.presentationName)
+            </th>
+            <th>
+                Average Score
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.presentationName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.reviewScore)
+                </td>
+                <td>
+                    @Html.ActionLink("All Reviews", "StaffPresentReviews", "Attendee", new { primarykey = item.presentationName } , new { @method = "GET" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

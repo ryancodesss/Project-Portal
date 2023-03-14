@@ -13,6 +13,8 @@ using Project_Portal.Services;
 using Firebase.Auth;
 using FireSharp.Exceptions;
 using System.Net;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Project_Portal.Controllers
 {
@@ -28,6 +30,7 @@ namespace Project_Portal.Controllers
         //Initialize Sevices namespace
         private DatabaseServices dbService = new DatabaseServices();
         private AuthenticationServices authService = new AuthenticationServices();
+
 
         // GET: Create presentation event
         public IActionResult StaffCreatePresent()
@@ -160,7 +163,6 @@ namespace Project_Portal.Controllers
             }
 
 
-
             if (ModelState.IsValid)
             {
                 try
@@ -175,6 +177,68 @@ namespace Project_Portal.Controllers
                 return RedirectToAction(nameof(StaffViewPresentation));
             }
             return View(presentation);
+        }
+
+
+        // GET registered presentations table
+        public async Task<IActionResult> RegisteredPresentation()
+        {
+            // retrieve records from attendance table
+            IFirebaseClient client = new FireSharp.FirebaseClient(config);
+            FirebaseResponse response = client.Get("Attendance");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<AttendeeModel>();
+
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            // filter list for user email
+            // retrieve email from session
+            string token = HttpContext.Session.GetString("_UserToken");
+            string email = await authService.GetUserEmailByToken(token);
+
+            var present_list = new List<string>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].userEmail == email)
+                {
+                    present_list.Add(list[i].presentationName.ToString());
+                }
+            }
+
+            // retrieve records from presentation table
+            FirebaseResponse present_response = client.Get("Presentation");
+            dynamic present_data = JsonConvert.DeserializeObject<dynamic>(present_response.Body);
+            var all_present_list = new List<PresentationModel>();
+            var registered_present_list = new List<PresentationModel>();
+
+            if (present_data != null)
+            {
+                foreach (var item in present_data)
+                {
+                    all_present_list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            // filter list using user email
+            for (int i = 0; i < all_present_list.Count; i++)
+            {
+                for(int j = 0; j < present_list.Count; j++)
+                {
+                    if (all_present_list[i].name.ToString() == present_list[j].ToString())
+                    {
+                        registered_present_list.Add(all_present_list[i]);
+                    }
+                }
+                
+            }
+
+            return View(registered_present_list);
         }
 
         // POST: Delete presentation event button
