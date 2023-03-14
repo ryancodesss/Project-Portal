@@ -122,7 +122,7 @@ namespace Project_Portal.Controllers
         // POST: Create presentation event
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePresentationAsync(PresentationModel presentation)
+        public async Task<IActionResult> StaffCreatePresentAsync(PresentationModel presentation)
         {
             try
             {
