@@ -30,7 +30,8 @@ namespace Project_Portal.Services
 
         public async void AddUser(RegistrationModel user)
         {
-            await client.PushAsync("Users", user);
+            PushResponse response = await client.PushAsync("Users", user);
+
         }
 
         public async Task<SetResponse> AddPresentation(PresentationModel presentation)
@@ -70,6 +71,26 @@ namespace Project_Portal.Services
             }
 
             return list;
+        }
+
+        public async Task<string> GetUserTypeById(string id)
+        {
+            FirebaseResponse response = await client.GetAsync("Users");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    foreach (var detail in item)
+                    {
+                        if(detail.Id == id)
+                        {
+                            return detail.User_Type;
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }
