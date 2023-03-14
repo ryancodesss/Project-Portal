@@ -158,7 +158,7 @@ namespace Project_Portal.Controllers
 
                     // Check if userType is staff or student
                     // INSERT ALGO HERE
-                    return RedirectToAction("IndexStaff");
+                    return RedirectToAction("IndexAdmin");
                 }
 
             }
@@ -181,26 +181,11 @@ namespace Project_Portal.Controllers
 
 
         // GET: view all acounts
-        public IActionResult ViewAccounts()
+        public async Task<IActionResult> ViewAccountsAsync()
         {
-            /**
-            IFirebaseClient client = new FireSharp.FirebaseClient(config);
+            var list = await dbService.GetAllUser();
 
-            // check if user have registered before
-            // pull all data from attendence table
-            FirebaseResponse response = client.Get("User");
-            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
-            var list = new List<GeneralUserModel>();
-            if (data != null)
-            {
-                foreach (var item in data)
-                {
-                    list.Add(JsonConvert.DeserializeObject<GeneralUserModel>(((JProperty)item).Value.ToString()));
-                }
-            }**/
-
-            //return View(list);
-            return View();
+            return View(list);
         }
 
     }
