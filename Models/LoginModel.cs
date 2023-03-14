@@ -10,7 +10,8 @@ namespace Project_Portal.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; } // user's email
-        [Required] 
+        [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; } // user's password
     }
 

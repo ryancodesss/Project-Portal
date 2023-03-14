@@ -14,7 +14,8 @@ namespace Project_Portal.Controllers
     public class HomeController : Controller
     {
         //Initialize Sevices namespace
-        public DatabaseServices dbService = new DatabaseServices();
+        private DatabaseServices dbService = new DatabaseServices();
+        private AuthenticationServices authService = new AuthenticationServices();
 
         // Declare firebase authentication object
         FirebaseAuthProvider auth;
@@ -129,8 +130,7 @@ namespace Project_Portal.Controllers
             }
             catch (FirebaseAuthException ex)
             {
-                var firebaseEx = JsonConvert.DeserializeObject<FirebaseError>(ex.Message);
-                ModelState.AddModelError(String.Empty, firebaseEx.error.message);
+                ModelState.AddModelError(String.Empty, ex.InnerException.ToString());
                 return View(registrationModel);
             }
 
@@ -157,8 +157,30 @@ namespace Project_Portal.Controllers
                     HttpContext.Session.SetString("_UserToken", token);
 
                     // Check if userType is staff or student
-                    // INSERT ALGO HERE
-                    return RedirectToAction("IndexAdmin");
+                    // Get user uid by token
+                    var uid = await authService.GetCurrentUser(token);
+                    if (uid != null)
+                    {
+                        // Get user type by uid
+                        var userType = await dbService.GetUserTypeById(uid);
+                        //Set usertype in session
+                        HttpContext.Session.SetString ("_UserType", userType);
+
+                        if(userType == "S")
+                        {
+                            return RedirectToAction("IndexGeneral");
+                        }
+                        else if(userType == "T")
+                        {
+                            return RedirectToAction("IndexStaff");
+                        }
+                        else if (userType == "A")
+                        {
+                            return RedirectToAction("IndexAdmin");
+                        }
+
+                        return RedirectToAction("IndexGeneral");
+                    }
                 }
 
             }
@@ -175,7 +197,7 @@ namespace Project_Portal.Controllers
         // Sign-out process
         public IActionResult LogOut()
         {
-            HttpContext.Session.Remove("_UserToken");
+            HttpContext.Session.Clear();
             return RedirectToAction("SignIn");
         }
 
