@@ -169,7 +169,8 @@ namespace Project_Portal.Controllers
             return View("Reviews");
         }
 
-        public IActionResult Reviews()
+        // GET: user only able to view all of their own reviews
+        public async Task<IActionResult> Reviews()
         {
             // Get presentation id
             IFirebaseClient client = new FireSharp.FirebaseClient(config);
@@ -183,7 +184,22 @@ namespace Project_Portal.Controllers
                     list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
                 }
             }
-            return View(list);
+
+            var attend_list = new List<AttendeeModel>();
+
+            // get user email
+            string token = HttpContext.Session.GetString("_UserToken");
+            string email = await authService.GetUserEmailByToken(token);
+
+            for (int i = 0; i < list.Count; i ++)
+            {
+                if(list[i].userEmail == email)
+                {
+                    attend_list.Add(list[i]);
+                }
+            }
+
+            return View(attend_list);
         }
 
         // GET: Staff view all presentations and their average score

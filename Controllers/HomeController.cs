@@ -210,6 +210,62 @@ namespace Project_Portal.Controllers
             return View(list);
         }
 
+        // GET admin add new staff form
+        public IActionResult AddStaff()
+        {
+            return View();
+        }
+
+        // Validate and process the registration request submitted by user
+        [HttpPost]
+        public async Task<IActionResult> AddStaff(RegistrationModel registrationModel)
+        {
+            try
+            {
+                //create the user
+                await auth.CreateUserWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
+                //log in the new user
+                var fbAuthLink = await auth
+                                .SignInWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
+                string token = fbAuthLink.FirebaseToken;
+                HttpContext.Session.SetString("_UserToken", token);
+
+                //Get current user's authentication ID
+                var uid = fbAuthLink.User.LocalId.ToString();
+                //Set current user's id to be uid
+                registrationModel.Id = uid;
+
+                registrationModel.User_Type = 'T';
+
+                try
+                {
+                    dbService.AddUser(registrationModel);
+                }
+                catch (FirebaseException ex)
+                {
+                    var firebaseEx = JsonConvert.DeserializeObject<FirebaseException>(ex.Message);
+                    ModelState.AddModelError(String.Empty, firebaseEx.Message);
+                    return View(registrationModel);
+                }
+
+                //saving the token in a session variable
+                if (token != null)
+                {
+                    HttpContext.Session.SetString("_UserToken", token);
+
+                    return View("ViewAccounts");
+                }
+            }
+            catch (FirebaseAuthException ex)
+            {
+                ModelState.AddModelError(String.Empty, ex.InnerException.ToString());
+                return View(registrationModel);
+            }
+
+            return View();
+
+        }
+
     }
 
 }
