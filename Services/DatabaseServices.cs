@@ -12,6 +12,8 @@ using FireSharp.Response;
 using Newtonsoft.Json;
 using System.Net;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
+using System.Collections.Generic;
 
 namespace Project_Portal.Services
 {
@@ -92,5 +94,58 @@ namespace Project_Portal.Services
             }
             return null;
         }
+
+        public async Task<List<PresentationModel>> GetAllUpcomingPresentation()
+        {
+            FirebaseResponse response = await client.GetAsync("Presentation");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            DateTime currentDateTime = DateTime.Now;
+            var upcomingProjectList = new List<PresentationModel>();
+
+            if(data != null)
+            {
+                foreach (var item in data)
+                {
+                    foreach(var detail in item)
+                    {
+                        string datetime = detail.date + " " + detail.time;
+                        DateTime presentationDateTime = DateTime.ParseExact(datetime, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                        if(presentationDateTime >= currentDateTime)
+                        {
+                            upcomingProjectList.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                        }
+                    }
+                }
+            }
+
+            return upcomingProjectList;
+        }
+
+        public async Task<List<PresentationModel>> GetAllCompletedPresentation()
+        {
+            FirebaseResponse response = await client.GetAsync("Presentation");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            DateTime currentDateTime = DateTime.Now;
+            var completedProjectList = new List<PresentationModel>();
+
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    foreach (var detail in item)
+                    {
+                        string datetime = detail.date + " " + detail.time;
+                        DateTime presentationDateTime = DateTime.ParseExact(datetime, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                        if (presentationDateTime < currentDateTime)
+                        {
+                            completedProjectList.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                        }
+                    }
+                }
+            }
+
+            return completedProjectList;
+        }
+
     }
 }

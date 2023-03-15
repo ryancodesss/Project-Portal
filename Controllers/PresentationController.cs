@@ -45,19 +45,21 @@ namespace Project_Portal.Controllers
         }
 
         // GET: View Up-coming Presentations
-        public IActionResult GeneralViewPresent()
+        public async Task<IActionResult> GeneralViewPresentAsync()
         {
-            IFirebaseClient client = new FireSharp.FirebaseClient(config);
-            FirebaseResponse response = client.Get("Presentation");
-            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
-            var list = new List<PresentationModel>();
-            if (data != null)
-            {
-                foreach (var item in data)
-                {
-                    list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
-                }
-            }
+            //Get all upcoming presentation based on datetime
+            //Presentation must have a later datetime than current datetime
+            var list = await dbService.GetAllUpcomingPresentation();
+
+            return View(list);
+        }
+
+        // GET: View Completed Presentations
+        public async Task<IActionResult> GeneralViewCompletedPresentAsync()
+        {
+            //Get all upcoming presentation based on datetime
+            //Presentation must have a later datetime than current datetime
+            var list = await dbService.GetAllCompletedPresentation();
 
             return View(list);
         }
