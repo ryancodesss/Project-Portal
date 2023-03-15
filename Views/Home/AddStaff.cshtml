@@ -1,19 +1,19 @@
 ﻿@model Project_Portal.Models.RegistrationModel
 
 @{
-    Layout = "~/Views/Shared/Home_Layout.cshtml";
+    Layout = "~/Views/Shared/Staff_Layout.cshtml";
 }
 
 @{
-    ViewData["Title"] = "Registration";
+    ViewData["Title"] = "AddStaff";
 }
 
-<h1>Registration</h1>
+<h1>Add Staff</h1>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Registration">
+        <form asp-action="AddStaff">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
@@ -46,16 +46,15 @@
                 <span asp-validation-for="Affliation" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Sign Up" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="SignIn">Already have an account?Sign In</a>
-</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

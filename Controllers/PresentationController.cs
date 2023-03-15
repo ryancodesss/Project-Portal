@@ -122,7 +122,7 @@ namespace Project_Portal.Controllers
         // POST: Create presentation event
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreatePresentationAsync(PresentationModel presentation)
+        public async Task<IActionResult> StaffCreatePresentationAsync(PresentationModel presentation)
         {
             try
             {
@@ -239,6 +239,60 @@ namespace Project_Portal.Controllers
             }
 
             return View(registered_present_list);
+        }
+
+        // GET: Staff view their own presentations
+        public async Task<IActionResult> CreatedPresentations()
+        {
+            IFirebaseClient client = new FireSharp.FirebaseClient(config);
+            FirebaseResponse response = client.Get("Presentation");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<PresentationModel>();
+
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            // filter list for user email
+            // retrieve email from session
+            string token = HttpContext.Session.GetString("_UserToken");
+            string email = await authService.GetUserEmailByToken(token);
+
+            var present_list = new List<PresentationModel>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].creator == email)
+                {
+                    present_list.Add(list[i]);
+                }
+            }
+
+
+            return View(present_list);  
+        }
+
+        // GET: admin view presentations
+        public IActionResult AdminPresentView()
+        {
+            IFirebaseClient client = new FireSharp.FirebaseClient(config);
+            FirebaseResponse response = client.Get("Presentation/");
+
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<PresentationModel>();
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            return View(list);
+
         }
 
         // POST: Delete presentation event button

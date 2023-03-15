@@ -11,7 +11,7 @@
 <h1>AccountDetails</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="AddStaff">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -20,7 +20,7 @@
                 @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Username)
+                @Html.DisplayNameFor(model => model.Fullname)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Phone)
@@ -41,7 +41,7 @@
                     @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Username)
+                    @Html.DisplayFor(modelItem => item.Fullname)
             </td>
             <td>
                     @Html.DisplayFor(modelItem => item.Phone)
@@ -54,7 +54,6 @@
             </td>
             <td>
                     @Html.ActionLink("Edit", "EditAccountDetails", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
                 @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>

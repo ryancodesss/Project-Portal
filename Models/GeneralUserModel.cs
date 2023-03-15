@@ -11,7 +11,7 @@ namespace Project_Portal.Models
         public string Email { get; set; } // user's email address
 
         public string Password { get; set; } // user's login password
-        public string Username { get; set; } // user's name
+        public string Fullname { get; set; } // user's name
         public string Phone { get; set; } // user's phone number
         public string Affliation { get; set; } // user's school affliation
         public char User_Type { get; set; } // user's type

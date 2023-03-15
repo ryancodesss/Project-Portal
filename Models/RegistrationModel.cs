@@ -28,7 +28,7 @@ namespace Project_Portal.Models
         [Required]
         [Display(Name = "Phone Number")]
         [DataType(DataType.PhoneNumber)]
-        public string Phone_Num { get; set; }
+        public string Phone { get; set; }
 
         [Required]
         public string Affliation { get; set; }
