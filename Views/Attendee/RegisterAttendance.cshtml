@@ -23,6 +23,8 @@
                 <label asp-for="userEmail" class="control-label">Email</label>
                 <input asp-for="userEmail" class="form-control" value="@ViewBag.userEmail" readonly />
             </div>
+
+            <br />
             <div class="form-group">
                 <input type="submit" value="Attend" class="btn btn-primary" />
             </div>
@@ -30,9 +32,6 @@
     </div>
 </div>
 <br />
-<div>
-    <a asp-action="GeneralViewPresent">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -122,16 +122,40 @@ namespace Project_Portal.Controllers
         // POST: Create presentation event
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> StaffCreatePresentationAsync(PresentationModel presentation)
+        public async Task<IActionResult> StaffCreatePresentAsync(PresentationModel presentation)
         {
             try
             {
+                // check if presentation name exist in records
+                IFirebaseClient client = new FireSharp.FirebaseClient(config);
+                FirebaseResponse response = client.Get("Presentation");
+                dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+                var list = new List<PresentationModel>();
+                if (data != null)
+                {
+                    foreach (var item in data)
+                    {
+                        list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                    }
+                }
+
+                // if name matches, return view and show error message
+                for(int i = 0; i < list.Count; i++)
+                {
+                    if (list[i].name == presentation.name)
+                    {
+                        ModelState.AddModelError(string.Empty, "Something went wrong!!");
+                        return View();
+                    }
+                }
+
                 //Get current user token
                 var token = HttpContext.Session.GetString("_UserToken");
                 //Get current user id based on token
                 string uid = await authService.GetCurrentUser(token);
+                string email = await authService.GetUserEmailByToken(token);
                 //Set presentation Model's creator to uid
-                presentation.creator = uid;
+                presentation.creator = email;
                 //Add presentation
                 SetResponse setResponse = await dbService.AddPresentation(presentation);
 
@@ -296,15 +320,58 @@ namespace Project_Portal.Controllers
         }
 
         // POST: Delete presentation event button
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        // delete all presentation records in attendance table
+        // this method is for staff
         public ActionResult DeletePresentation(string id)
         {
             try
             {
                 IFirebaseClient client = new FireSharp.FirebaseClient(config);
+                FirebaseResponse single_response = client.Get("Presentation/");
+                dynamic get_data = JsonConvert.DeserializeObject<dynamic>(single_response.Body);
+                var get_list = new List<PresentationModel>();
+                if (get_data != null)
+                {
+                    foreach (var item in get_data)
+                    {
+                        get_list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                    }
+                }
+
+                string selected_name = "";
+                foreach (var item in get_list)
+                {
+                    if(item.Id == id)
+                    {
+                        selected_name = item.name;
+                    }
+                }
+
                 FirebaseResponse response = client.Delete("Presentation/" + id);
-                return RedirectToAction("StaffViewPresentation");
+
+                // delete all presentation records in attendance table
+                FirebaseResponse get_response = client.Get("Attendance/");
+
+                dynamic attend_data = JsonConvert.DeserializeObject<dynamic>(get_response.Body);
+                var attend_list = new List<AttendeeModel>();
+                if (attend_data != null)
+                {
+                    foreach (var item in attend_data)
+                    {
+                        attend_list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
+                    }
+                }
+
+                for(int i = 0; i < attend_list.Count; i++)
+                {
+                    if (attend_list[i].presentationName == selected_name)
+                    {
+                        FirebaseResponse delete_response = client.Delete("Attendance/" + attend_list[i].Id);
+                    }
+                }
+
+
+                return View();
 
             }
             catch
@@ -312,6 +379,67 @@ namespace Project_Portal.Controllers
                 return View();
             }
         }
-        
+
+        // POST: Delete presentation event button
+        // delete all presentation records in attendance table
+        // this method is for admin
+        public ActionResult AdminDeletePresentation(string id)
+        {
+            try
+            {
+                IFirebaseClient client = new FireSharp.FirebaseClient(config);
+                FirebaseResponse single_response = client.Get("Presentation/");
+                dynamic get_data = JsonConvert.DeserializeObject<dynamic>(single_response.Body);
+                var get_list = new List<PresentationModel>();
+                if (get_data != null)
+                {
+                    foreach (var item in get_data)
+                    {
+                        get_list.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                    }
+                }
+
+                string selected_name = "";
+                foreach (var item in get_list)
+                {
+                    if (item.Id == id)
+                    {
+                        selected_name = item.name;
+                    }
+                }
+
+                FirebaseResponse response = client.Delete("Presentation/" + id);
+
+                // delete all presentation records in attendance table
+                FirebaseResponse get_response = client.Get("Attendance/");
+
+                dynamic attend_data = JsonConvert.DeserializeObject<dynamic>(get_response.Body);
+                var attend_list = new List<AttendeeModel>();
+                if (attend_data != null)
+                {
+                    foreach (var item in attend_data)
+                    {
+                        attend_list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
+                    }
+                }
+
+                for (int i = 0; i < attend_list.Count; i++)
+                {
+                    if (attend_list[i].presentationName == selected_name)
+                    {
+                        FirebaseResponse delete_response = client.Delete("Attendance/" + attend_list[i].Id);
+                    }
+                }
+
+
+                return View("AdminPresentView");
+
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
     }
 }

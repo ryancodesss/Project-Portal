@@ -165,8 +165,18 @@ namespace Project_Portal.Controllers
             review.comb_id = review.presentationName + "_" + email;
             review.userEmail = email;
 
-            client.Set("Attendance/" + review.Id, review);
-            return View("Reviews");
+            SetResponse setResponse = client.Set("Attendance/" + review.Id, review);
+
+            if (setResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                ModelState.AddModelError(string.Empty, "Added Succesfully");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Something went wrong!!");
+            }
+
+            return View();
         }
 
         // GET: user only able to view all of their own reviews

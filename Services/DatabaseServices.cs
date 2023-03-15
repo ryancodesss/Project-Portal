@@ -30,7 +30,7 @@ namespace Project_Portal.Services
 
         public async void AddUser(RegistrationModel user)
         {
-            PushResponse response = await client.PushAsync("Users", user);
+            await client.PushAsync("Users", user);
 
         }
 

@@ -7,7 +7,7 @@ namespace Project_Portal.Models
 {
     public class RegistrationModel
     {
-        public string Id { get; set; }
+        public string Id { get; set; } // firebase unique id
 
         [Required]
         [EmailAddress]
@@ -18,12 +18,9 @@ namespace Project_Portal.Models
         public string Password { get; set; }
 
         [Required]
-        [Display(Name = "First Name")]
-        public string First_Name { get; set; }
+        [Display(Name = "Full Name")]
+        public string Full_Name { get; set; }
 
-        [Required]
-        [Display(Name = "Last Name")]
-        public string Last_Name { get; set; }
 
         [Required]
         [Display(Name = "Phone Number")]

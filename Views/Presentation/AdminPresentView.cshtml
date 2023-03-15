@@ -57,7 +57,7 @@
                     @Html.DisplayFor(modelItem => item.creator)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Delete</a> |
+                    @Html.ActionLink("Delete", "AdminDeletePresentation", "Presentation", new { id = item.Id})
                 </td>
             </tr>
         }

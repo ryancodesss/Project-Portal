@@ -218,17 +218,12 @@ namespace Project_Portal.Controllers
 
         // Validate and process the registration request submitted by user
         [HttpPost]
-        public async Task<IActionResult> AddStaff(RegistrationModel registrationModel)
+        public async Task<IActionResult> AddStaffAsync(RegistrationModel registrationModel)
         {
             try
             {
                 //create the user
-                await auth.CreateUserWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
-                //log in the new user
-                var fbAuthLink = await auth
-                                .SignInWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
-                string token = fbAuthLink.FirebaseToken;
-                HttpContext.Session.SetString("_UserToken", token);
+                var fbAuthLink = await auth.CreateUserWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
 
                 //Get current user's authentication ID
                 var uid = fbAuthLink.User.LocalId.ToString();
@@ -247,14 +242,6 @@ namespace Project_Portal.Controllers
                     ModelState.AddModelError(String.Empty, firebaseEx.Message);
                     return View(registrationModel);
                 }
-
-                //saving the token in a session variable
-                if (token != null)
-                {
-                    HttpContext.Session.SetString("_UserToken", token);
-
-                    return View("ViewAccounts");
-                }
             }
             catch (FirebaseAuthException ex)
             {
@@ -264,6 +251,34 @@ namespace Project_Portal.Controllers
 
             return View();
 
+        }
+
+        public ActionResult DeleteUser(string id)
+        {
+            IFirebaseConfig config = new FireSharp.Config.FirebaseConfig
+            {
+                AuthSecret = "BJm0Xt86MfbcKsarwCPzTvT2zfOcGw72OEW5XUzq",
+                BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
+            };
+
+            //IFirebaseClient client = new FireSharp.FirebaseClient(config);
+            //client = new FireSharp.FirebaseClient(config);
+            //FirebaseResponse response = client.Delete("User/" + id);
+
+
+            IFirebaseClient client = new FireSharp.FirebaseClient(config);
+            FirebaseResponse single_response = client.Get("User/");
+            dynamic get_data = JsonConvert.DeserializeObject<dynamic>(single_response.Body);
+            var get_list = new List<RegistrationModel>();
+            if (get_data != null)
+            {
+                foreach (var item in get_data)
+                {
+                    get_list.Add(JsonConvert.DeserializeObject<RegistrationModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            return RedirectToAction("IndexAdmin");
         }
 
     }
