@@ -51,6 +51,8 @@ namespace Project_Portal.Controllers
             //Presentation must have a later datetime than current datetime
             var list = await dbService.GetAllUpcomingPresentation();
 
+
+
             return View(list);
         }
 

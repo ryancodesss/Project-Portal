@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project_Portal.Models.GeneralUserModel>
+﻿@model IEnumerable<Project_Portal.Models.RegistrationModel>
 
 @{
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
@@ -20,7 +20,7 @@
                 @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Fullname)
+                @Html.DisplayNameFor(model => model.Full_Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Phone)
@@ -41,7 +41,7 @@
                     @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.Fullname)
+                    @Html.DisplayFor(modelItem => item.Full_Name)
             </td>
             <td>
                     @Html.DisplayFor(modelItem => item.Phone)
@@ -53,7 +53,7 @@
                     @Html.DisplayFor(modelItem => item.User_Type)
             </td>
             <td>
-                    @Html.ActionLink("Edit", "EditAccountDetails", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Edit", "EditUser", new { id=item.Id }) |
                     @Html.ActionLink("Delete", "DeleteUser", new {  id=item.Id })
             </td>
         </tr>
