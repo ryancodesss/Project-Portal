@@ -111,7 +111,7 @@ namespace Project_Portal.Services
                 {
                     foreach (var detail in item)
                     {
-                        if(detail.Id == id)
+                        if (detail.Id == id)
                         {
                             return detail.User_Type;
                         }
@@ -148,20 +148,20 @@ namespace Project_Portal.Services
             DateTime currentDateTime = DateTime.Now;
             var upcomingProjectList = new List<PresentationModel>();
 
-            if(data != null)
+            if (data != null)
             {
                 foreach (var item in data)
                 {
-                    foreach(var detail in item)
+                    foreach (var detail in item)
                     {
                         string datetime = detail.date + " " + detail.time;
 
-                            DateTime presentationDateTime = DateTime.ParseExact(datetime, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+                        DateTime presentationDateTime = DateTime.ParseExact(datetime, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
 
-                            if (presentationDateTime >= currentDateTime)
-                            {
-                                upcomingProjectList.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
-                            }
+                        if (presentationDateTime >= currentDateTime)
+                        {
+                            upcomingProjectList.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
+                        }
 
                     }
                 }
