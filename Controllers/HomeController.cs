@@ -8,6 +8,8 @@ using FireSharp.Exceptions;
 using FireSharp.Interfaces;
 using FireSharp.Response;
 using Newtonsoft.Json.Linq;
+using NuGet.Common;
+using System.Net;
 
 namespace Project_Portal.Controllers
 {
@@ -99,10 +101,13 @@ namespace Project_Portal.Controllers
                 //create the user
                 var fbAuthLink = await auth.CreateUserWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
 
+                
+
                 //Get current user's authentication ID
-                var uid = fbAuthLink.User.LocalId.ToString();
+                string uid = fbAuthLink.User.LocalId.ToString();
+
                 //Set current user's id to be uid
-                registrationModel.Id = uid;
+                //registrationModel.Id = uid;
 
                 try
                 {
@@ -145,23 +150,27 @@ namespace Project_Portal.Controllers
 
                     // Check if userType is staff or student
                     // Get user uid by token
+
+                    // this uid is authentication uid
                     var uid = await authService.GetCurrentUser(token);
+                    
                     if (uid != null)
                     {
                         // Get user type by uid
-                        var userType = await dbService.GetUserTypeById(uid);
+                        char userType = await dbService.GetUserTypeById(loginModel.Email);
                         //Set usertype in session
-                        HttpContext.Session.SetString ("_UserType", userType);
+                        //HttpContext.Session.SetString ("_UserType", userType);
 
-                        if(userType == "S")
+
+                        if (userType == 'S')
                         {
                             return RedirectToAction("IndexGeneral");
                         }
-                        else if(userType == "T")
+                        else if(userType == 'T')
                         {
                             return RedirectToAction("IndexStaff");
                         }
-                        else if (userType == "A")
+                        else if (userType == 'A')
                         {
                             return RedirectToAction("IndexAdmin");
                         }
@@ -226,9 +235,14 @@ namespace Project_Portal.Controllers
                 catch (FirebaseException ex)
                 {
                     var firebaseEx = JsonConvert.DeserializeObject<FirebaseException>(ex.Message);
-                    ModelState.AddModelError(String.Empty, firebaseEx.Message);
+                    //ModelState.AddModelError(String.Empty, firebaseEx.Message);
+                    ModelState.AddModelError(string.Empty, "Something went wrong!!");
                     return View(registrationModel);
                 }
+            
+                ModelState.AddModelError(string.Empty, "Added Succesfully");
+                
+                
             }
             catch (FirebaseAuthException ex)
             {
@@ -242,30 +256,94 @@ namespace Project_Portal.Controllers
 
         public ActionResult DeleteUser(string id)
         {
+            try
+            {
+                IFirebaseConfig config = new FireSharp.Config.FirebaseConfig
+                {
+                    AuthSecret = "BJm0Xt86MfbcKsarwCPzTvT2zfOcGw72OEW5XUzq",
+                    BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
+                };
+
+                IFirebaseClient client = new FireSharp.FirebaseClient(config);
+                client = new FireSharp.FirebaseClient(config);
+                FirebaseResponse response = client.Delete("Users/" + id);
+
+                // retrieve authentication table uid
+                //var uid = await authService.GetCurrentUser(token);
+                
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+                
+
+
+            return View("IndexAdmin");
+
+        }
+
+        // GET: Admin edit user information
+        // prefill edit form with selected user information
+        public ActionResult EditUser(string id)
+        {
             IFirebaseConfig config = new FireSharp.Config.FirebaseConfig
             {
                 AuthSecret = "BJm0Xt86MfbcKsarwCPzTvT2zfOcGw72OEW5XUzq",
                 BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
             };
 
-            //IFirebaseClient client = new FireSharp.FirebaseClient(config);
-            //client = new FireSharp.FirebaseClient(config);
-            //FirebaseResponse response = client.Delete("User/" + id);
-
-
             IFirebaseClient client = new FireSharp.FirebaseClient(config);
-            FirebaseResponse single_response = client.Get("User/");
-            dynamic get_data = JsonConvert.DeserializeObject<dynamic>(single_response.Body);
-            var get_list = new List<RegistrationModel>();
-            if (get_data != null)
+            client = new FireSharp.FirebaseClient(config);
+            FirebaseResponse response = client.Get("Users/" + id);
+            RegistrationModel data = JsonConvert.DeserializeObject<RegistrationModel>(response.Body);
+            
+            // populate viewbag
+            ViewBag.Full_Name = data.Full_Name;
+            ViewBag.Phone = data.Phone;
+            ViewBag.Affliation = data.Affliation;
+            ViewBag.User_Type = data.User_Type;
+            ViewBag.Email = data.Email;
+            ViewBag.Password = data.Password;
+
+            return View();
+        }
+
+        // POST: Admin edit user information
+        // upload edited information
+        [HttpPost]
+        public ActionResult EditUser(RegistrationModel account)
+        {
+            try
             {
-                foreach (var item in get_data)
+                IFirebaseConfig config = new FireSharp.Config.FirebaseConfig
                 {
-                    get_list.Add(JsonConvert.DeserializeObject<RegistrationModel>(((JProperty)item).Value.ToString()));
+                    AuthSecret = "BJm0Xt86MfbcKsarwCPzTvT2zfOcGw72OEW5XUzq",
+                    BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
+                };
+
+                IFirebaseClient client = new FireSharp.FirebaseClient(config);
+                client = new FireSharp.FirebaseClient(config);
+
+                SetResponse response = client.Set("Users/" + account.Id, account);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    ModelState.AddModelError(string.Empty, "Added Succesfully");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Something went wrong!!");
                 }
             }
+            
 
-            return RedirectToAction("IndexAdmin");
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+
+            return View();
         }
 
     }

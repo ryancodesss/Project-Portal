@@ -32,8 +32,9 @@ namespace Project_Portal.Services
 
         public async void AddUser(RegistrationModel user)
         {
-            await client.PushAsync("Users", user);
-
+            PushResponse response = await client.PushAsync("Users/", user);
+            user.Id = response.Result.name;
+            SetResponse setResponse = await client.SetAsync("Users/" + user.Id, user);
         }
 
         public async Task<SetResponse> AddPresentation(PresentationModel presentation)
@@ -69,16 +70,16 @@ namespace Project_Portal.Services
             return response.StatusCode;
         }
 
-        public async Task<List<GeneralUserModel>> GetAllUser()
+        public async Task<List<RegistrationModel>> GetAllUser()
         {
             FirebaseResponse response = await client.GetAsync("Users");
             dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
-            var list = new List<GeneralUserModel>();
+            var list = new List<RegistrationModel>();
             if (data != null)
             {
                 foreach (var item in data)
                 {
-                    list.Add(JsonConvert.DeserializeObject<GeneralUserModel>(((JProperty)item).Value.ToString()));
+                    list.Add(JsonConvert.DeserializeObject<RegistrationModel>(((JProperty)item).Value.ToString()));
                 }
             }
 
@@ -103,6 +104,7 @@ namespace Project_Portal.Services
 
         public async Task<string> GetUserTypeById(string id)
         {
+            /**
             FirebaseResponse response = await client.GetAsync("Users");
             dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
             if (data != null)
@@ -119,6 +121,33 @@ namespace Project_Portal.Services
                 }
             }
             return null;
+            **/
+            FirebaseResponse response = client.Get("Users");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<RegistrationModel>();
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<RegistrationModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            char userType = 'S';
+            // checking for matching email
+            // retrieve matching email user type
+            for(int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Email == email)
+                {
+                    userType = list[i].User_Type;
+                    break;
+                }
+            }
+            
+            return userType;
+
+            
         }
 
         public async Task<string> GetUserEmailById(string id)
