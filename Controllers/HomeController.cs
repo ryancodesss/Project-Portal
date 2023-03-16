@@ -97,12 +97,7 @@ namespace Project_Portal.Controllers
             try
             {
                 //create the user
-                await auth.CreateUserWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
-                //log in the new user
-                var fbAuthLink = await auth
-                                .SignInWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
-                string token = fbAuthLink.FirebaseToken;
-                HttpContext.Session.SetString("_UserToken", token);
+                var fbAuthLink = await auth.CreateUserWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
 
                 //Get current user's authentication ID
                 var uid = fbAuthLink.User.LocalId.ToString();
@@ -119,14 +114,6 @@ namespace Project_Portal.Controllers
                     ModelState.AddModelError(String.Empty, firebaseEx.Message);
                     return View(registrationModel);
                 }
-
-                //saving the token in a session variable
-                if (token != null)
-                {
-                    HttpContext.Session.SetString("_UserToken", token);
-
-                    return View("IndexGeneral");
-                }
             }
             catch (FirebaseAuthException ex)
             {
@@ -134,7 +121,7 @@ namespace Project_Portal.Controllers
                 return View(registrationModel);
             }
 
-            return View();
+            return RedirectToAction("SignIn");
 
         }
 

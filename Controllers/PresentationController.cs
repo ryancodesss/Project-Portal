@@ -33,10 +33,10 @@ namespace Project_Portal.Controllers
 
 
         // GET: Create presentation event
-        public IActionResult StaffCreatePresent()
+        public async Task<IActionResult> StaffCreatePresentAsync()
         {
             // retrieve user id from session
-            string creator = HttpContext.Session.GetString("_UserEmail");
+            string creator = await authService.GetUserEmailByToken(HttpContext.Session.GetString("_UserToken"));
             // prefill form textbox values
             ViewBag.creator = creator;
 
@@ -209,6 +209,11 @@ namespace Project_Portal.Controllers
         // GET registered presentations table
         public async Task<IActionResult> RegisteredPresentation()
         {
+            //Get attendance table
+            //Get User email
+            //Get completed presentation table
+            //
+
             // retrieve records from attendance table
             IFirebaseClient client = new FireSharp.FirebaseClient(config);
             FirebaseResponse response = client.Get("Attendance");
