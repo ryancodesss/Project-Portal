@@ -250,9 +250,14 @@ namespace Project_Portal.Controllers
                 catch (FirebaseException ex)
                 {
                     var firebaseEx = JsonConvert.DeserializeObject<FirebaseException>(ex.Message);
-                    ModelState.AddModelError(String.Empty, firebaseEx.Message);
+                    //ModelState.AddModelError(String.Empty, firebaseEx.Message);
+                    ModelState.AddModelError(string.Empty, "Something went wrong!!");
                     return View(registrationModel);
                 }
+            
+                ModelState.AddModelError(string.Empty, "Added Succesfully");
+                
+                
             }
             catch (FirebaseAuthException ex)
             {
@@ -315,6 +320,43 @@ namespace Project_Portal.Controllers
             ViewBag.User_Type = data.User_Type;
             ViewBag.Email = data.Email;
             ViewBag.Password = data.Password;
+
+            return View();
+        }
+
+        // POST: Admin edit user information
+        // upload edited information
+        [HttpPost]
+        public ActionResult EditUser(RegistrationModel account)
+        {
+            try
+            {
+                IFirebaseConfig config = new FireSharp.Config.FirebaseConfig
+                {
+                    AuthSecret = "BJm0Xt86MfbcKsarwCPzTvT2zfOcGw72OEW5XUzq",
+                    BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
+                };
+
+                IFirebaseClient client = new FireSharp.FirebaseClient(config);
+                client = new FireSharp.FirebaseClient(config);
+
+                SetResponse response = client.Set("Users/" + account.Id, account);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    ModelState.AddModelError(string.Empty, "Added Succesfully");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Something went wrong!!");
+                }
+            }
+            
+
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
 
             return View();
         }
