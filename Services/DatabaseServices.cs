@@ -102,7 +102,7 @@ namespace Project_Portal.Services
             return list;
         }
 
-        public async Task<string> GetUserTypeById(string id)
+        public async Task<char> GetUserTypeByEmail(string email)
         {
             /**
             FirebaseResponse response = await client.GetAsync("Users");

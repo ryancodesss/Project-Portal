@@ -157,7 +157,7 @@ namespace Project_Portal.Controllers
                     if (uid != null)
                     {
                         // Get user type by uid
-                        char userType = await dbService.GetUserTypeById(loginModel.Email);
+                        char userType = await dbService.GetUserTypeByEmail(loginModel.Email);
                         //Set usertype in session
                         //HttpContext.Session.SetString ("_UserType", userType);
 
