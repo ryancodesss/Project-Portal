@@ -56,7 +56,7 @@ namespace Project_Portal.Controllers
                 var completedPresentationList = await dbService.GetAllCompletedPresentation();
 
                 //Current presentionId of the presentation user is registering + user email
-                attend.comb_id = attend.presentationId + "_" + attend.userEmail;
+                attend.comb_id = attend.presentationName + "_" + attend.userEmail;
 
                 // for each record
                 // check if presentationId match

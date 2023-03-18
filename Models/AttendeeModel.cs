@@ -10,13 +10,16 @@ namespace Project_Portal.Models
     {
         public string Id { get; set; }
         public string comb_id { get; set; } // combination of presentation name and user email
-        public string presentationId { get; set; }
+
+        [DisplayName("Presentation Name")]
         public string presentationName { get; set; }
 
         public string userEmail { get; set; }
 
+        [DisplayName("Review Comment")]
         public string reviewDesc { get; set; }
 
+        [DisplayName("Review Score")]
         [DefaultValue(null)]
         public string reviewScore { get; set; }
     }

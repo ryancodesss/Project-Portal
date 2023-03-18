@@ -51,7 +51,7 @@ namespace Project_Portal.Services
         {
             PushResponse response = await client.PushAsync("Attendance/", attendee);
             attendee.Id = response.Result.name;
-            SetResponse setResponse = await client.SetAsync("Presentation/" + attendee.Id, attendee);
+            SetResponse setResponse = await client.SetAsync("Attendance/" + attendee.Id, attendee);
 
             return setResponse;
         }
