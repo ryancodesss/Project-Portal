@@ -140,7 +140,7 @@ namespace Project_Portal.Controllers
             review.comb_id = review.presentationName + "_" + email;
             review.userEmail = email;
 
-            SetResponse setResponse = client.Set("Attendance/" + review.Id, review);
+            SetResponse setResponse = await client.SetAsync("Attendance/" + review.Id, review);
 
             if (setResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {
