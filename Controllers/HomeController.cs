@@ -154,6 +154,7 @@ namespace Project_Portal.Controllers
                     // this uid is authentication uid
                     var uid = await authService.GetCurrentUser(token);
                     
+                    
                     if (uid != null)
                     {
                         // Get user type by uid
@@ -270,6 +271,7 @@ namespace Project_Portal.Controllers
 
                 // retrieve authentication table uid
                 //var uid = await authService.GetCurrentUser(token);
+                
                 
             }
             catch(Exception ex)
