@@ -24,6 +24,9 @@ namespace Project_Portal.Controllers
             BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
+        private DatabaseServices dbService = new DatabaseServices();
+
+
         private AuthenticationServices authService = new AuthenticationServices();
 
         // GET User register attendence
@@ -41,64 +44,36 @@ namespace Project_Portal.Controllers
         // POST user registration attendence
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RegisterAttendance(AttendeeModel attend)
+        public async Task<IActionResult> RegisterAttendanceAsync(AttendeeModel attend)
         {
             try
             {
-                IFirebaseClient client = new FireSharp.FirebaseClient(config);
-
                 // check if user have registered before
                 // pull all data from attendence table
-                FirebaseResponse registered_response = client.Get("Attendance");
-                dynamic registered_data = JsonConvert.DeserializeObject<dynamic>(registered_response.Body);
-                var registered_list = new List<AttendeeModel>();
-                if (registered_data != null)
-                {
-                    foreach (var item in registered_data)
-                    {
-                        registered_list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
-                    }
-                }
+                var attendanceList = await dbService.GetAllAttendee();
 
-                // Get selected presentation name
-                var data = attend;
-                
-                string selectName = data.presentationName.ToString();
-                string selectEmail = data.userEmail.ToString();
+                //Get all completed presentation
+                var completedPresentationList = await dbService.GetAllCompletedPresentation();
+
+                //Current presentionId of the presentation user is registering + user email
+                attend.comb_id = attend.presentationName + "_" + attend.userEmail;
 
                 // for each record
-                // check if presentation name match
-                // then check if email match
+                // check if presentationId match
+                // then check if user email match
                 // if match, break
-                for (int i = 0; i < registered_list.Count; i++)
+                foreach(var attendance in attendanceList)
                 {
-                    string check_name = registered_list[i].presentationName.ToString();
-                    string check_email = registered_list[i].userEmail.ToString();
-
-                    if (check_name == selectName)
+                    if(attendance.comb_id == attend.comb_id)
                     {
-                        // check email match
-                        if (check_email == selectEmail)
-                        {
-                            // exit
-                            ModelState.AddModelError(string.Empty, "Something went wrong!!");
-                            return View();
-                            
-                        }
+                        // exit
+                        ModelState.AddModelError(string.Empty, "You already registered for this presentation");
+                        return View();
                     }
-
                 }
 
-
                 // enter new record into table
-                
-                // combine presentation name and email
-                
-                data.comb_id = data.presentationName.ToString() + "_" + selectEmail;
-
-                PushResponse response = client.Push("Attendance/", data);
-                data.Id = response.Result.name;
-                SetResponse setResponse = client.Set("Attendance/" + data.Id, data);
+                SetResponse setResponse = await dbService.AddAttendee(attend);
 
                 if (setResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -253,10 +228,12 @@ namespace Project_Portal.Controllers
                 {
                     if (attend_list[k].presentationName == list[i].name)
                     {
-                        // accumulate score
-                        totalScore = totalScore + attend_list[k].reviewScore;
-                        totalCount++;
-
+                        if (Convert.ToInt32(attend_list[k].reviewScore) > 0)
+                        {
+                            // accumulate score
+                            totalScore = totalScore + Convert.ToInt32(attend_list[k].reviewScore);
+                            totalCount++;
+                        }
                     }
                 }
 
@@ -267,12 +244,15 @@ namespace Project_Portal.Controllers
                 {
                     // Get average score
                     average_score = totalScore / totalCount;
+                    single_review.reviewScore = average_score.ToString();
+                    single_review.presentationName = list[i].name;
+                }
+                else
+                {
+                    single_review.reviewScore = "No review recieved";
+                    single_review.presentationName = list[i].name;
                 }
                 
-
-                single_review.reviewScore = average_score;
-                single_review.presentationName = list[i].name;
-
 
                 // Store average and name in list
                 accumulate_list.Add(single_review);

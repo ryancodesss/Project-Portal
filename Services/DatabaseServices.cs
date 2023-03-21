@@ -47,6 +47,16 @@ namespace Project_Portal.Services
             return setResponse;
         }
 
+        public async Task<SetResponse> AddAttendee(AttendeeModel attendee)
+        {
+            PushResponse response = await client.PushAsync("Attendance/", attendee);
+            attendee.Id = response.Result.name;
+            SetResponse setResponse = await client.SetAsync("Attendance/" + attendee.Id, attendee);
+
+            return setResponse;
+        }
+
+
         public async Task<PresentationModel> GetPresentationById(string id)
         {
             FirebaseResponse response = client.Get("Presentation/" + id);
@@ -76,6 +86,22 @@ namespace Project_Portal.Services
             return list;
         }
 
+        public async Task<List<AttendeeModel>> GetAllAttendee()
+        {
+            FirebaseResponse response = await client.GetAsync("Attendance");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            var list = new List<AttendeeModel>();
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
+                }
+            }
+
+            return list;
+        }
+
         public async Task<char> GetUserTypeByEmail(string email)
         {
             /**
@@ -87,7 +113,7 @@ namespace Project_Portal.Services
                 {
                     foreach (var detail in item)
                     {
-                        if(detail.Id == id)
+                        if (detail.Id == id)
                         {
                             return detail.User_Type;
                         }
@@ -124,6 +150,26 @@ namespace Project_Portal.Services
             
         }
 
+        public async Task<string> GetUserEmailById(string id)
+        {
+            FirebaseResponse response = await client.GetAsync("Users");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(response.Body);
+            if (data != null)
+            {
+                foreach (var item in data)
+                {
+                    foreach (var detail in item)
+                    {
+                        if (detail.Id == id)
+                        {
+                            return detail.Email;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public async Task<List<PresentationModel>> GetAllUpcomingPresentation()
         {
             FirebaseResponse response = await client.GetAsync("Presentation");
@@ -131,18 +177,21 @@ namespace Project_Portal.Services
             DateTime currentDateTime = DateTime.Now;
             var upcomingProjectList = new List<PresentationModel>();
 
-            if(data != null)
+            if (data != null)
             {
                 foreach (var item in data)
                 {
-                    foreach(var detail in item)
+                    foreach (var detail in item)
                     {
                         string datetime = detail.date + " " + detail.time;
+
                         DateTime presentationDateTime = DateTime.ParseExact(datetime, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
-                        if(presentationDateTime >= currentDateTime)
+
+                        if (presentationDateTime >= currentDateTime)
                         {
                             upcomingProjectList.Add(JsonConvert.DeserializeObject<PresentationModel>(((JProperty)item).Value.ToString()));
                         }
+
                     }
                 }
             }
