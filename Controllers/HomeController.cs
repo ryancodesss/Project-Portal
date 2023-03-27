@@ -109,6 +109,9 @@ namespace Project_Portal.Controllers
                 //Set current user's id to be uid
                 //registrationModel.Id = uid;
 
+                //Remove password from RegistrationModel object so it is not stored in database and only store in firebase auth
+                registrationModel.Password = null;
+
                 try
                 {
                     dbService.AddUser(registrationModel);

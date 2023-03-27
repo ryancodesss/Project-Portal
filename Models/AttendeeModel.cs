@@ -14,6 +14,7 @@ namespace Project_Portal.Models
         [DisplayName("Presentation Name")]
         public string presentationName { get; set; }
 
+        [DisplayName("User Email")]
         public string userEmail { get; set; }
 
         [DisplayName("Review Comment")]

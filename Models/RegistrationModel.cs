@@ -1,6 +1,7 @@
 ﻿using Firebase.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 
@@ -30,7 +31,7 @@ namespace Project_Portal.Models
         
         public string Affliation { get; set; }
 
-        
+        [DisplayName("User Type")]
         public char User_Type { get; set; } = 'S';
     }
 }

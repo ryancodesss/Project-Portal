@@ -25,10 +25,11 @@
                 <input asp-for="Email" class="form-control" value="@ViewBag.Email" readonly />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <input type="hidden" asp-for="Password" />
+@*            <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
                 <input for="Text" class="form-control" value="@ViewBag.Password" readonly />
-            </div>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Phone" class="control-label"></label>
                 <input asp-for="Phone" class="form-control" value="@ViewBag.Phone" />
@@ -54,7 +55,7 @@
 </div>
 
 <div>
-    <a asp-action="StaffViewPresentation">Back to List</a>
+    <a asp-action="ViewAccounts">Back to List</a>
 </div>
 
 @section Scripts {
