@@ -371,21 +371,37 @@ namespace Project_Portal.Controllers
                     }
                 }
 
+                bool delAttendance = true;
                 for(int i = 0; i < attend_list.Count; i++)
                 {
                     if (attend_list[i].presentationName == selected_name)
                     {
-                        FirebaseResponse delete_response = client.Delete("Attendance/" + attend_list[i].Id);
+                        try
+                        {
+                            FirebaseResponse delete_response = client.Delete("Attendance/" + attend_list[i].Id);
+                        }
+                        catch
+                        {
+                            delAttendance = false;
+                        }
                     }
                 }
 
+                if (response.StatusCode == HttpStatusCode.OK && delAttendance == true)
+                {
+                    TempData["message"] = "Deleted Successfully";
+                }
+                else
+                {
+                    TempData["message"] = "Something went wrong!!";
+                }
 
-                return View();
+                return RedirectToAction("CreatedPresentations");
 
             }
             catch
             {
-                return View();
+                return RedirectToAction("CreatedPresentations");
             }
         }
 
@@ -432,21 +448,38 @@ namespace Project_Portal.Controllers
                     }
                 }
 
+                bool delAttendance = true;
                 for (int i = 0; i < attend_list.Count; i++)
                 {
                     if (attend_list[i].presentationName == selected_name)
                     {
-                        FirebaseResponse delete_response = client.Delete("Attendance/" + attend_list[i].Id);
+                        try
+                        {
+                            FirebaseResponse delete_response = client.Delete("Attendance/" + attend_list[i].Id);
+                        }
+                        catch
+                        {
+                            delAttendance = false;
+                        }
                     }
                 }
 
+                if (response.StatusCode == HttpStatusCode.OK && delAttendance == true)
+                {
+                    TempData["message"] = "Deleted Successfully";
+                }
+                else
+                {
+                    TempData["message"] = "Something went wrong!!";
+                }
 
-                return View("AdminPresentView");
+
+                return RedirectToAction("AdminPresentView");
 
             }
             catch
             {
-                return View();
+                return RedirectToAction("AdminPresentView");
             }
         }
 
