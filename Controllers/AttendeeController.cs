@@ -267,7 +267,14 @@ namespace Project_Portal.Controllers
             {
                 foreach (var item in attend_data)
                 {
-                    attend_list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
+                    foreach (var detail in item)
+                    {
+                        if(detail.reviewScore != null)
+                        {
+                            attend_list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
+                        }
+                    }
+                        
                 }
             }
 
