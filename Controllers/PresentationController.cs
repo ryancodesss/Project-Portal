@@ -197,14 +197,15 @@ namespace Project_Portal.Controllers
                 {
                     //Update DB
                     HttpStatusCode statusCode = await dbService.EditPresentationById(id, presentation);
+                    TempData["message"] = "Successfully updated";
                 }
                 catch (FirebaseException ex)
                 {
-                    ModelState.AddModelError(string.Empty, ex.Message);
+                    TempData["message"] = "Something went wrong!";
                 }
-                return RedirectToAction(nameof(StaffViewPresentation));
+                return RedirectToAction("CreatedPresentations");
             }
-            return View(presentation);
+            return RedirectToAction("CreatedPresentations");
         }
 
 
