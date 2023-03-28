@@ -24,9 +24,8 @@ namespace Project_Portal.Controllers
             BasePath = "https://portal-project-14039-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
+        //Initailize Database services and Firebase Authentication services
         private DatabaseServices dbService = new DatabaseServices();
-
-
         private AuthenticationServices authService = new AuthenticationServices();
 
         // GET User register attendence
@@ -108,39 +107,31 @@ namespace Project_Portal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReviewForm(AttendeeModel review)
         {
+            // Get all attendance records
+            var list = await dbService.GetAllAttendee();
 
-            // Get presentation id
-            IFirebaseClient client = new FireSharp.FirebaseClient(config);
-            FirebaseResponse list_response = client.Get("Attendance");
-            dynamic data = JsonConvert.DeserializeObject<dynamic>(list_response.Body);
-            var list = new List<AttendeeModel>();
-            if (data != null)
-            {
-                foreach (var item in data)
-                {
-                    list.Add(JsonConvert.DeserializeObject<AttendeeModel>(((JProperty)item).Value.ToString()));
-                }
-            }
-
-            for(int i = 0; i < list.Count; i++)
-            {
-                if (list[i].presentationName == review.presentationName)
-                {
-                    review.Id = list[i].Id;
-                    break;
-                }
-            }
-
-            // create presentation uid
+            //Get user email
             string token = HttpContext.Session.GetString("_UserToken");
             string email = await authService.GetUserEmailByToken(token);
-
 
             // set all variables for review object
             review.comb_id = review.presentationName + "_" + email;
             review.userEmail = email;
 
-            SetResponse setResponse = await client.SetAsync("Attendance/" + review.Id, review);
+            //Get correct existing attendance record based on comb_id
+            foreach(var item in list)
+            {
+                if(item != null)
+                {
+                    if(item.comb_id == review.comb_id) 
+                    {
+                        review.Id = item.Id;
+                        break;
+                    }
+                }
+            }
+
+            SetResponse setResponse = await dbService.SubmitReview(review);
 
             if (setResponse.StatusCode == System.Net.HttpStatusCode.OK)
             {

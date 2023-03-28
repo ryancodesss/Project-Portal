@@ -14,6 +14,7 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 
 namespace Project_Portal.Services
 {
@@ -224,6 +225,13 @@ namespace Project_Portal.Services
 
             return completedProjectList;
         }
+
+        public async Task<SetResponse> SubmitReview(AttendeeModel Review)
+        {
+            SetResponse setResponse =  await client.SetAsync("Attendance/" + Review.Id, Review);
+            return setResponse;
+        }
+
 
     }
 }
