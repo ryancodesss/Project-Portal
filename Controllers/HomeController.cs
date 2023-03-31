@@ -100,9 +100,7 @@ namespace Project_Portal.Controllers
             {
                 //create the user
                 var fbAuthLink = await auth.CreateUserWithEmailAndPasswordAsync(registrationModel.Email, registrationModel.Password);
-
                 
-
                 //Get current user's authentication ID
                 string uid = fbAuthLink.User.LocalId.ToString();
 
@@ -125,7 +123,7 @@ namespace Project_Portal.Controllers
             }
             catch (FirebaseAuthException ex)
             {
-                ModelState.AddModelError(String.Empty, ex.InnerException.ToString());
+                ModelState.AddModelError(String.Empty, "Invalid email address");
                 return View(registrationModel);
             }
 
@@ -281,11 +279,10 @@ namespace Project_Portal.Controllers
             {
                 Console.WriteLine(ex.Message);
             }
-                
 
+            TempData["message"] = "User Deleted Successfully";
 
-            return View("IndexAdmin");
-
+            return RedirectToAction("ViewAccounts");
         }
 
         // GET: Admin edit user information

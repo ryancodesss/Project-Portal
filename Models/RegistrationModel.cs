@@ -28,7 +28,7 @@ namespace Project_Portal.Models
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
-        
+        [DisplayName("Affiliation")]
         public string Affliation { get; set; }
 
         [DisplayName("User Type")]
