@@ -127,6 +127,7 @@ namespace Project_Portal.Controllers
                 return View(registrationModel);
             }
 
+            TempData["message"] = "Account Created Successfully, Please Log in.";
             return RedirectToAction("SignIn");
 
         }
