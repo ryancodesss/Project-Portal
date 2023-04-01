@@ -14,20 +14,21 @@ namespace Project_Portal.Models
         
         public string Email { get; set; }
 
-        
+        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        
+        [Required]
         [Display(Name = "Full Name")]
         public string Full_Name { get; set; }
 
 
-        
+        [Required]
         [Display(Name = "Phone Number")]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
+        [Required]
         [DisplayName("Affiliation")]
         public string Affliation { get; set; }
 

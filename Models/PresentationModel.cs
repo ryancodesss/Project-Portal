@@ -15,9 +15,11 @@ namespace Project_Portal.Models
         [DisplayName("Name")]
         public string name { get; set; }
 
+        [Required]
         [DisplayName("Description")]
         public string description { get; set; }
 
+        [Required]
         [DisplayName("Location")]
         public string location { get; set; }
 
