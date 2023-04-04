@@ -300,21 +300,24 @@ namespace Project_Portal.Controllers
             client = new FireSharp.FirebaseClient(config);
             FirebaseResponse response = client.Get("Users/" + id);
             RegistrationModel data = JsonConvert.DeserializeObject<RegistrationModel>(response.Body);
-            
-            // populate viewbag
-            ViewBag.Full_Name = data.Full_Name;
-            ViewBag.Phone = data.Phone;
-            ViewBag.Affliation = data.Affliation;
-            ViewBag.User_Type = data.User_Type;
-            ViewBag.Email = data.Email;
-            ViewBag.Password = data.Password;
 
-            return View();
+            // populate model
+            var account = new RegistrationModel();
+            account.Id = data.Id;
+            account.Email = data.Email;
+            account.Full_Name = data.Full_Name;
+            account.Phone = data.Phone;
+            account.User_Type = data.User_Type;
+            account.Affliation = data.Affliation;
+            account.Password = null;
+            
+            return View(account);
         }
 
         // POST: Admin edit user information
         // upload edited information
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditUser(RegistrationModel account)
         {
             try
@@ -332,7 +335,7 @@ namespace Project_Portal.Controllers
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    ModelState.AddModelError(string.Empty, "Added Succesfully");
+                    ModelState.AddModelError(string.Empty, "Updated Succesfully");
                 }
                 else
                 {
@@ -346,7 +349,7 @@ namespace Project_Portal.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            return View();
+            return View(account);
         }
 
     }

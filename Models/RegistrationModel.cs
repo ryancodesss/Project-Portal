@@ -1,5 +1,6 @@
 ﻿using Firebase.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -34,5 +35,12 @@ namespace Project_Portal.Models
 
         [DisplayName("User Type")]
         public char User_Type { get; set; } = 'S';
+
+        public List<SelectListItem> User_Types { get; } = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "S", Text = "Public" },
+            new SelectListItem { Value = "T", Text = "Staff" },
+            new SelectListItem { Value = "A", Text = "Admin"  },
+        };
     }
 }

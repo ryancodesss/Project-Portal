@@ -17,12 +17,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Full_Name" class="control-label"></label>
-                <input asp-for="Full_Name" class="form-control" value="@ViewBag.Full_Name" />
+                <input asp-for="Full_Name" class="form-control" asp-items="Model.Full_Name" />
                 <span asp-validation-for="Full_Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" value="@ViewBag.Email" readonly />
+                <input asp-for="Email" class="form-control" asp-items="Model.Email" readonly />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Password" />
@@ -32,19 +32,24 @@
             </div>*@
             <div class="form-group">
                 <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" value="@ViewBag.Phone" />
+                <input asp-for="Phone" class="form-control" asp-items="Model.Phone" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Affliation" class="control-label"></label>
-                <input asp-for="Affliation" class="form-control" value="@ViewBag.Affliation" />
+                <input asp-for="Affliation" class="form-control" asp-items="Model.Affliation"/>
                 <span asp-validation-for="Affliation" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="User_Type" class="control-label"></label>
-                <input asp-for="User_Type" class="form-control" value="@ViewBag.User_Type" />
+                <select asp-for="User_Type" class="form-control" asp-items="Model.User_Types"></select>
                 <span asp-validation-for="User_Type" class="text-danger"></span>
             </div>
+            @*<div class="form-group">
+                <label asp-for="User_Type" class="control-label"></label>
+                <input asp-for="User_Type" class="form-control" value="@ViewBag.User_Type" />
+                <span asp-validation-for="User_Type" class="text-danger"></span>
+            </div>*@
             <br />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
